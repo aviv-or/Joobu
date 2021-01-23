@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Joobu</title>
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1"
+			data-n-head="true"
+		/>
+		<meta charset="utf-8" />
+		<script src="./script/editor/editor.js" />
+	</head>
+	<body onload="window.editor.onload()">
+		<div
+			class="fixed bottom-0 top-0 w-full h-screen flex md:justify-center items-start md:items-center md:p-4"
+			x-data
+			x-show="$store.editor.showCreateEventDialog"
+		>
+			<div
+				class="z-40 fixed bottom-0 top-0 w-full h-screen"
+				style="background-color: rgba(0, 0, 0, 0.5)"
+				@click="window.editor.closeEventDialog()"
+			></div>
+			<div
+				role="dialog"
+				aria-labelledby="dialog-title"
+				class="rounded border border-blue-100 w-full md:max-w-xl fixed bg-white w-full z-50 p-6 relative max-h-full overflow-auto pointer-events-auto"
+			>
+				<header class="pb-4">
+					<h3
+						class="text-3xl font-bold text-gray-700"
+						id="dialog-title"
+					>
+						Create a new event
+					</h3>
+				</header>
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-12">
+					<label class="block">
+						<span class="block pb-2 text-sm font-bold text-gray-600"
+							>Date</span
+						>
+						<input
+							type="date"
+							id="date-input"
+							x-model="$store.events.temp.date"
+							class="border border-gray-400 px-4 py-2 w-full"
+						/>
+					</label>
+					<label class="block">
+						<span class="block pb-2 text-sm font-bold text-gray-600"
+							>Category</span
+						>
+						<div class="relative flex justify-center">
+							<select
+								x-model="$store.events.temp.category"
+								class="border border-gray-400 px-4 py-2 w-full appearance-none rounded-none pr-8 truncate"
+							>
+								<template
+									x-for="category in $store.categories.all"
+									:key="category.name"
+								>
+									<option
+										x-text="category.name"
+										:value="category.name"
+									></option>
+								</template>
+							</select>
+							<div
+								class="absolute right-3 h-full flex justify-center items-center"
+							>
+								<img
+									src="./assets/icons/chevron-down.svg"
+									width="15"
+								/>
+							</div>
+						</div>
+					</label>
+				</div>
+				<div class="grid grid-cols-1 gap-6 pb-12">
+					<label class="block">
+						<span class="block pb-2 text-sm font-bold text-gray-600"
+							>Title</span
+						>
+						<input
+							type="text"
+							x-model="$store.events.temp.title"
+							class="border border-gray-400 px-4 py-2 w-full"
+						/>
+					</label>
+					<label class="block">
+						<span class="block pb-2 text-sm font-bold text-gray-600"
+							>Description</span
+						>
+						<textarea
+							type="date"
+							x-model="$store.events.temp.description"
+							class="border border-gray-400 px-4 py-2 w-full"
+						/>
+					</label>
+				</div>
+				<div
+					class="grid grid-cols-1 grid-rows-2 md:grid-rows-1 md:grid-cols-3 gap-4"
+				>
+					<button
+						class="border border-red-400 bg-white text-red-600 font-bold block text-center px-10 flex flex-row justify-center items-center py-3 hover:bg-red-400 hover:text-gray-800 transition-all w-full"
+						x-show="$store.events.temp.index !== undefined"
+						@click="window.editor.deleteEvent()"
+					>
+						Delete
+					</button>
+					<button
+						class="border border-blue-400 bg-blue-400 text-white font-bold block text-center px-10 flex flex-row justify-center items-center py-3 hover:bg-white hover:text-blue-500 hover:border-blue-400 transition-all w-full md:col-start-3"
+						@click="window.editor.saveEvent()"
+						x-text="$store.events.temp.index !== undefined ? 'Save' : 'Create'"
+					></button>
+				</div>
+			</div>
+		</div>
+		<main class="max-w-2xl mx-auto py-16 px-6">
+			<header class="pb-16">
+				<a href="/index.html">
+					<img src="./assets/logo.svg" width="150" class="pb-12" />
+				</a>
+				<p class="leading-loose text-gray-600 pb-6">
+					Enter your career events, include job changes, promotions,
+					publications, speaking events and anything else you can
+					think of!
+				</p>
+				<div class="bg-blue-100 py-2 px-4 rounded flex flex-row">
+					<img src="./assets/icons/info.svg" width="32" />
+					<p class="text-gray-600 pl-2">
+						Your data is saved locally, nothing is stored on our
+						server.
+					</p>
+				</div>
+			</header>
+			<div>
+				<!-- About yourself section -->
+				<section class="border p-3 border-gray-200 mb-8" x-data>
+					<header class="flex flex-row">
+						<div class="flex items-center content-center pr-4">
+							<button
+								@click="$store.editor.showPersonalDetails = !$store.editor.showPersonalDetails"
+							>
+								<img
+									x-show="!$store.editor.showPersonalDetails"
+									src="./assets/icons/plus-circle.svg"
+								/>
+								<img
+									x-show="$store.editor.showPersonalDetails"
+									src="./assets/icons/minus-circle.svg"
+								/>
+							</button>
+						</div>
+						<h3 class="text-3xl font-bold text-gray-700">
+							Personal details
+						</h3>
+					</header>
+
+					<div x-show="$store.editor.showPersonalDetails">
+						<div class="pt-3 px-1">
+							<div class="pb-4">
+								<p class="leading-loose text-gray-600 pb-6">
+									This information will be used to fill out
+									your resume and portfolio.
+								</p>
+							</div>
+							<div class="grid grid-cols-2 gap-6 pb-12">
+								<label class="block">
+									<span
+										class="block pb-2 text-sm font-bold text-gray-600"
+										>First name</span
+									>
+									<input
+										type="text"
+										x-model="$store.personalInfo.firstName"
+										placeholder="John"
+										class="border border-gray-400 px-4 py-2 w-full"
+									/>
+								</label>
+								<label class="block">
+									<span
+										class="block pb-2 text-sm font-bold text-gray-600"
+										>Last name</span
+									>
+									<input
+										type="text"
+										x-model="$store.personalInfo.lastName"
+										placeholder="Smith"
+										class="border border-gray-400 px-4 py-2 w-full"
+									/>
+								</label>
+								<label class="block">
+									<span
+										class="block pb-2 text-sm font-bold text-gray-600"
+										>Email</span
+									>
+									<input
+										type="email"
+										x-model="$store.personalInfo.email"
+										placeholder="john_smith@gmail.com"
+										class="border border-gray-400 px-4 py-2 w-full"
+									/>
+								</label>
+								<label class="block">
+									<span
+										class="block pb-2 text-sm font-bold text-gray-600"
+										>Phone</span
+									>
+									<input
+										type="tel"
+										x-model="$store.personalInfo.phone"
+										placeholder="(123) 123-1234"
+										class="border border-gray-400 px-4 py-2 w-full"
+									/>
+								</label>
+								<label class="block col-span-2">
+									<span
+										class="block pb-2 text-sm font-bold text-gray-600"
+										>Address</span
+									>
+									<input
+										type="address"
+										x-model="$store.personalInfo.address"
+										placeholder="223 East Main, Columbus OH, 12345"
+										class="border border-gray-400 px-4 py-2 w-full"
+									/>
+								</label>
+							</div>
+						</div>
+
+						<div>
+							<label class="block">
+								<span
+									class="block pb-2 text-sm font-bold text-gray-600"
+									>About yourself</span
+								>
+								<textarea
+									rows="3"
+									x-model="$store.personalInfo.about"
+									class="border border-gray-400 px-4 py-2 w-full"
+								></textarea>
+							</label>
+						</div>
+					</div>
+				</section>
+
+				<!-- Timeline section -->
+				<section class="border py-3 border-gray-200" x-data>
+					<header class="flex flex-row px-3">
+						<div class="flex items-center content-center pr-4">
+							<button
+								@click="$store.editor.showTimeline = !$store.editor.showTimeline"
+							>
+								<img
+									x-show="!$store.editor.showTimeline"
+									src="./assets/icons/plus-circle.svg"
+								/>
+								<img
+									x-show="$store.editor.showTimeline"
+									src="./assets/icons/minus-circle.svg"
+								/>
+							</button>
+						</div>
+						<h3 class="text-3xl font-bold text-gray-700">
+							Career events
+						</h3>
+					</header>
+
+					<div x-show="$store.editor.showTimeline">
+						<div class="pt-3">
+							<div class="pb-4 px-4">
+								<p class="leading-loose text-gray-600 pb-6">
+									Add or remove events that have occurred in
+									your career.
+								</p>
+							</div>
+							<div class="flex justify-center items-center pb-8">
+								<button
+									class="border border-blue-400 bg-blue-400 text-white font-bold block text-center px-10 flex flex-row justify-center items-center py-3 hover:bg-white hover:text-blue-500 hover:border-blue-400 transition-all"
+									@click="window.editor.newEvent()"
+								>
+									Add career event
+								</button>
+							</div>
+							<ul>
+								<template
+									x-for="(event, index) in $store.events.all"
+									:key="index"
+								>
+									<button
+										class="border-t border-t-gray-300 py-3 px-4 block w-full text-left hover:bg-blue-400 group transition-all"
+										@click="editor.editEvent(index)"
+									>
+										<li>
+											<div
+												class="flex flex-row justify-between items-end pb-2"
+											>
+												<span
+													x-text="event.title"
+													class="text-xl font-semibold text-gray-700 w-2/3 truncate group-hover:text-white"
+												></span>
+												<div class="flex flex-row">
+													<span
+														x-text="event.date"
+														class="text-gray-500 text-right group-hover:text-gray-200"
+													></span>
+												</div>
+											</div>
+											<p
+												x-text="event.description"
+												class="truncate w-3/4 text-gray-500 group-hover:text-white"
+											></p>
+										</li>
+									</button>
+								</template>
+							</ul>
+						</div>
+					</div>
+				</section>
+			</div>
+		</main>
+	</body>
+</html>
